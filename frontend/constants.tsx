@@ -1,0 +1,1 @@
+export const BACKEND_URL = "https://backend.ayhr4310531.workers.dev"

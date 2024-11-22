@@ -1,7 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Bookmark, MoreHorizontal, Minus } from 'lucide-react'
 
 // Sample data - would typically come from your database
 const blogs = [
@@ -11,13 +9,9 @@ const blogs = [
     excerpt: "No need to create a fancy and modern website with hundreds of pages to make money online. — Making money online is the dream for man...",
     author: {
       name: "Peter V.",
-      avatar: "/placeholder.svg",
-      initials: "PV"
     },
     date: "Dec 3, 2023",
-    readTime: "3 min read",
     category: "Side Hustle",
-    isMemberOnly: true
   },
   {
     id: 2,
@@ -25,14 +19,9 @@ const blogs = [
     excerpt: "We've got this teeny-tiny service written Node.js, and like all services in the world its availability is very important to us. we're talking BC-era code here! Back in those dark ages, Docker didn't exist yet. We had to...",
     author: {
       name: "Payam Saderi",
-      avatar: "/placeholder.svg",
-      initials: "PS"
     },
     date: "Oct 2, 2023",
-    readTime: "4 min read",
     category: "Docker",
-    image: "/placeholder.svg?height=200&width=200",
-    isSelected: true
   }
 ]
 

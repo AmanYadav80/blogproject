@@ -103,9 +103,31 @@ blogRouter.get("/bulk", async (c) => {
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
-    const posts = await prisma.post.findMany({});
+    const posts = await prisma.post.findMany({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        published: true,
+        createdAt: true,
+        author: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
+    const formattedPosts = posts.map(post => ({
+      ...post,
+      date: post.createdAt.toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      })
+    }));
+    
     return c.json({
-      posts,
+      posts: formattedPosts,
     });
   });
 

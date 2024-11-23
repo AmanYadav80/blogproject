@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 
 export const NavBar = () => {
   const navigate = useNavigate();
-
+  const name = localStorage.getItem("user");
   const handleClick = () => {
     navigate('/post');
   }
@@ -29,7 +29,7 @@ export const NavBar = () => {
                 <AvatarImage src="/placeholder.svg" alt="User avatar" />
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium text-gray-700">John Doe</span>
+              <span className="text-sm font-medium text-gray-700">{name}</span>
             </div>
           </div>
         </div>

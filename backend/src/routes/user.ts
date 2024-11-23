@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { sign } from "hono/jwt";
-import { signupInput , signinInput } from "@aman06yadav/medium-common"
+import { signupInput, signinInput } from "@aman06yadav/medium-common";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -17,12 +17,12 @@ userRouter.post("/signup", async (c) => {
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
-  const { success } = signupInput.safeParse(body)
-  if(!success){
+  const { success } = signupInput.safeParse(body);
+  if (!success) {
     c.status(411);
     return c.json({
-        message : "Inputs are not correct"
-    })
+      message: "Inputs are not correct",
+    });
   }
   try {
     const user = await prisma.user.create({
@@ -34,7 +34,7 @@ userRouter.post("/signup", async (c) => {
     });
 
     const token = await sign({ id: user.id }, c.env.JWT_SECRET);
-    return c.json({  token });
+    return c.json({ token: token, name: body.name });
   } catch (e) {
     c.status(403);
     return c.text("Invalid");
@@ -47,12 +47,12 @@ userRouter.post("/signin", async (c) => {
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
-  const { success } = signinInput.safeParse(body)
-  if(!success){
-    c.status(411)
+  const { success } = signinInput.safeParse(body);
+  if (!success) {
+    c.status(411);
     return c.json({
-        message : "Inputs are not correct"
-    })
+      message: "Inputs are not correct",
+    });
   }
   try {
     const user = await prisma.user.findUnique({
@@ -67,7 +67,7 @@ userRouter.post("/signin", async (c) => {
       return c.json({ message: "Wrong credentials" });
     }
     const token = await sign({ id: user.id }, c.env.JWT_SECRET);
-    return c.json({  token });
+    return c.json({ token: token, name: body.name });
   } catch (e) {
     c.status(403);
     c.text("Invalid credentials");

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { BACKEND_URL } from "../../constants";
 
 export const useBlogs = () => {
-    const [data, setData] = useState("");
-    const [error, setError] = useState("");
+    const [data, setData] = useState<any[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const token = localStorage.getItem('token');
 
     useEffect(() => {
@@ -29,7 +29,7 @@ export const useBlogs = () => {
                 const json = await resp.json();
                 setData(json.posts);
             } catch (err) {
-                setError(err.message);
+                setError(err instanceof Error ? err.message : String(err));
             }
         };
 

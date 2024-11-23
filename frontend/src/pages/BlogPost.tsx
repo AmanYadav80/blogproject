@@ -1,69 +1,81 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { BACKEND_URL } from "../../constants";
+import { Shimmer } from "./Shimmer";
 
-// Sample data - would typically come from your database
-const blogs = [
-  {
-    id: 1,
-    title: "How an Ugly Single-Page Website Makes $5,000 a Month with Affiliate Marketing",
-    excerpt: "No need to create a fancy and modern website with hundreds of pages to make money online. — Making money online is the dream for man...",
-    author: {
-      name: "Peter V.",
-    },
-    date: "Dec 3, 2023",
-    category: "Side Hustle",
-  },
-  {
-    id: 2,
-    title: "To PM2, or Not to PM2: Embracing Docker for Node.js",
-    excerpt: "We've got this teeny-tiny service written Node.js, and like all services in the world its availability is very important to us. we're talking BC-era code here! Back in those dark ages, Docker didn't exist yet. We had to...",
-    author: {
-      name: "Payam Saderi",
-    },
-    date: "Oct 2, 2023",
-    category: "Docker",
-  }
-]
+export const BlogPost = () => {
+  const [blog, setBlog] = useState(null);
+  const [error, setError] = useState("");
+  const { id } = useParams();
+  const token = localStorage.getItem("token");
 
-export const BlogPost=() => {
-  return (
-    <div className="container mx-auto px-4 py-8 max-w-screen-sm">
-      <div className="space-y-8 divide-y divide-gray-100">
-        {blogs.map((blog) => (
-          <article key={blog.id} className="pt-8 first:pt-0">
-            <div className="flex items-center gap-3 mb-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
-                <AvatarFallback>{blog.author.initials}</AvatarFallback>
-              </Avatar>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">{blog.author.name}</span>
-                <span>·</span>
-                <span>{blog.date}</span>
-              </div>
-            </div>
+  useEffect(() => {
+    const fetchBlogDetail = async () => {
+      if (!token) {
+        setError("No token found");
+        return;
+      }
 
-            <div className="flex gap-8">
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-2">
-                  <a href="#">{blog.title}</a>
-                </h2>
-                <p className="text-lg text-muted-foreground mb-4 line-clamp-3">
-                  {blog.excerpt}
-                </p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <Badge variant="secondary" className="rounded-full">
-                      {blog.category}
-                    </Badge>
-                    <span>{Math.ceil(blog.excerpt.length/70)*1 + " minute(s) read"}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-        ))}
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/v1/blog/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: token,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch blog details");
+        }
+
+        const data = await response.json();
+        setBlog(data.post);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchBlogDetail();
+  }, [token, id]);
+
+  if (error) return <div>Error: {error}</div>;
+  if (!blog)
+    return (
+      <div>
+        <Shimmer />
       </div>
+    );
+
+  return (
+    <div className="container mx-auto max-w-4xl px-6 py-8">
+      {/* Title Section */}
+      <div className="flex gap-10">
+        <div>
+          <h1 className="text-5xl font-bold tracking-tight mb-6">
+            {blog?.title}
+          </h1>
+        </div>
+        <div>
+          <div className="flex items-center mb-8 gap-4 pt-2">
+            <div className="w-10 h-10 text-center pt-2 bg-gray-200 rounded-full">
+              {blog?.author?.name[0]}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Author</h2>
+              <div className="flex flex-col">
+                <span className="text-xl">{blog?.author?.name}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Content */}
+      <article className="prose prose-lg max-w-none">
+        <p className="text-lg leading-relaxed text-gray-700">{blog?.content}</p>
+      </article>
     </div>
-  )
-}
+  );
+};
+
+export default BlogPost;

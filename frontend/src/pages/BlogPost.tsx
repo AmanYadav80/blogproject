@@ -3,10 +3,18 @@ import { useParams } from "react-router-dom";
 import { BACKEND_URL } from "../../constants";
 import { Shimmer } from "./Shimmer";
 
+interface Blog {
+  title: string;
+  content: string;
+  author: {
+    name: string;
+  };
+}
+
 export const BlogPost = () => {
-  const [blog, setBlog] = useState(null);
+  const [blog, setBlog] = useState<Blog | null>(null);
   const [error, setError] = useState("");
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -32,7 +40,11 @@ export const BlogPost = () => {
         const data = await response.json();
         setBlog(data.post);
       } catch (err) {
-        setError(err.message);
+        let errorMessage = "Failed to do something exceptional";
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        setError(errorMessage);
       }
     };
 

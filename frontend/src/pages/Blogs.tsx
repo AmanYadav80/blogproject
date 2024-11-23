@@ -1,11 +1,10 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useBlogs } from "@/hooks/useBlogs";
 import { Shimmer } from "./Shimmer";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const Blogs = () => {
   const { data, error } = useBlogs();
-  const navigate = useNavigate();
   if (error) {
     return <p className="text-center mt-16">Error: {error}</p>;
   }
